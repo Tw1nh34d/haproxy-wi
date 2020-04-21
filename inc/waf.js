@@ -1,43 +1,9 @@
-var awesome = "/inc/fontawesome.min.js"
-
 $( function() {
 	$( "#ajaxwafstatus input" ).change(function() {
 		var id = $(this).attr('id');
 		metrics_waf(id);
 	});
 } );
-function showOverviewWaf(serv, hostnamea) {
-	$.getScript('/inc/chart.min.js');
-	showWafMetrics();
-	var i;
-	for (i = 0; i < serv.length; i++) { 
-		showOverviewWafCallBack(serv[i], hostnamea[i])
-	}
-	$.getScript('/inc/overview.js');
-	$.getScript('/inc/waf.js');
-}
-function showOverviewWafCallBack(serv, hostnamea) {
-	$.ajax( {
-		url: "options.py",
-		data: {
-			act: "overviewwaf",
-			serv: serv,
-			token: $('#token').val()
-		},
-		beforeSend: function() {
-			$("#"+hostnamea).html('<img class="loading_small" src="/inc/images/loading.gif" />');
-		},
-		type: "POST",
-		success: function( data ) {
-			$("#"+hostnamea).empty();
-			$("#"+hostnamea).html(data)		
-			$( "input[type=submit], button" ).button();
-			$( "input[type=checkbox]" ).checkboxradio();
-			$.getScript('/inc/overview.js');
-			$.getScript(awesome);
-		}				
-	} );
-}
 function metrics_waf(name) {
 	var enable = 0;
 	if ($('#'+name).is(':checked')) {
@@ -52,20 +18,20 @@ function metrics_waf(name) {
 		},
 		type: "POST",
 		success: function( data ) {
-			showOverviewWaf(ip, hostnamea);
+			showOverviewWaf();
 			setTimeout(function() {
 				$( "#"+name ).parent().parent().removeClass( "update" );
 			}, 2500 );
 		}					
 	} );
 }
-function installWaf(ip1) {
+function installWaf(ip) {
 	$("#ajax").html('')
 	$("#ajax").html('<div class="alert alert-warning">Please don\'t close and don\'t represh page. Wait until the work is completed. This may take some time </div>');
 	$.ajax( {
 		url: "options.py",
 		data: {
-			installwaf: ip1,
+			installwaf: ip,
 			token: $('#token').val()
 		},
 		type: "POST",
@@ -77,15 +43,11 @@ function installWaf(ip1) {
 					$('#error').remove();
 					$('.alert-danger').remove();
 				});
-			} else if (data.indexOf('Info') != '-1' ){
-				$('.alert-danger').remove();
-				$('.alert-warning').remove();
-				$("#ajax").html('<div class="alert alert-info">'+data+'</data>');
 			} else if (data.indexOf('success') != '-1' ){
 				$('.alert-danger').remove();
 				$('.alert-warning').remove();
-				$("#ajax").html('<div class="alert alert-success">WAF service has installed</data>');
-				showOverviewWaf(ip, hostnamea)
+				$("#ajax").html('<div class="alert alert-success">'+data+'</data>');
+				showOverviewWaf()
 			}	
 		}
 	} );	

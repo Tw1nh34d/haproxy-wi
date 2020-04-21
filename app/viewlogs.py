@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-import os
+import os, sys
+import http, cgi
+import glob
 import datetime
 import funct
 import sql
 from jinja2 import Environment, FileSystemLoader
-env = Environment(loader=FileSystemLoader('templates/'), autoescape=True)
+env = Environment(loader=FileSystemLoader('templates/'))
 template = env.get_template('logs.html')
 form = funct.form
 
@@ -49,7 +51,10 @@ except:
 	pass
 	
 try:
-	user, user_id, role, token, servers = funct.get_users_params()
+	cookie = http.cookies.SimpleCookie(os.environ.get("HTTP_COOKIE"))
+	user_id = cookie.get('uuid')
+	user = sql.get_user_name_by_uuid(user_id.value)
+	token = sql.get_token(user_id.value)
 except:
 	pass
 
@@ -60,7 +65,7 @@ selects.append(['haproxy-wi.access.log','access.log'])
 output_from_parsed_template = template.render(h2 = 1,
 												autorefresh = 1, 
 												title = "View internal logs",
-												role = role,
+												role = sql.get_user_role_by_uuid(user_id.value),
 												user = user,
 												onclick = "viewLogs()",
 												serv = serv,

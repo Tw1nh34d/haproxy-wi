@@ -6,33 +6,40 @@
 	<p>
 		<form action="{{ action }}" method="post">
 			<a class="ui-button ui-widget ui-corner-all" title="Return back" id="back" onclick="history.go(-2)">Back</a>
-			<input type="hidden" id="service" value="{{service}}" />
 			<select autofocus required name="serv" id="{{ select_id }}">
 				<option disabled>Choose server</option>
 					{% for select in selects %}
-						{% if select.2 == serv %}
-							<option value="{{ select.2 }}" selected>{{ select.1 }}</option>
+						{% if keepalived %}
+							{% if select.1 == serv %}
+								<option value="{{ select.1 }}" selected>{{ select.0 }}</option>								
+							{% else %}
+								<option value="{{ select.1 }}">{{ select.0 }}</option>								
+							{% endif %}
+							{% if select.3 == serv %}
+								<option value="{{ select.3 }}" selected>{{ select.2 }}</option>
+							{% else %}
+								<option value="{{ select.3 }}">{{ select.2 }}</option>
+							{% endif %}
 						{% else %}
-							<option value="{{ select.2 }}">{{ select.1 }}</option>
+							{% if select.2 == serv %}
+								<option value="{{ select.2 }}" selected>{{ select.1 }}</option>
+							{% else %}
+								<option value="{{ select.2 }}">{{ select.1 }}</option>
+							{% endif %}
 						{% endif %}
 					{% endfor %}
 			</select>
-			{% if service != 'keepalived' %}
-				<a class="ui-button ui-widget ui-corner-all" title="Show running config" onclick="showConfig()">Open</a>
-				<a class="ui-button ui-widget ui-corner-all" title="View stat" onclick="openStats()">Stat</a>
-			{% endif %}
-			{% if service != 'keepalived' and service != 'nginx'%}
-				<a class="ui-button ui-widget ui-corner-all" title="Show map" onclick="showMap()">Map</a>	
-			{% endif %}
-			{% if service != 'keepalived' %}					
+			{% if not keepalived %}
+				<a class="ui-button ui-widget ui-corner-all" title="Show running config" onclick="showConfig()">Open</a>	
 				<a class="ui-button ui-widget ui-corner-all" title="Compare configs" onclick="showCompareConfigs()">Compare</a>	
+				<a class="ui-button ui-widget ui-corner-all" title="Show map" onclick="showMap()">Map</a>	
+				<a class="ui-button ui-widget ui-corner-all" title="View stat" onclick="openStats()">Stat</a>	
 				{% if role <= 2 %}
 					<a class="ui-button ui-widget ui-corner-all" title="Show versions" onclick="openVersions()">Versions</a>	
 				{% endif %}
 			{% else %}
 				{% if role <= 2 %}
-					<button type="submit" value="open" name="open" class="btn btn-default" title="Edit running config">Edit</button>
-					<a class="ui-button ui-widget ui-corner-all" title="Show versions" onclick="openVersions()">Versions</a>
+				<button type="submit" value="open" name="open" class="btn btn-default" title="Edit running config">Edit</button>
 				{% endif %}
 			{% endif %}
 		</form>
@@ -51,12 +58,12 @@
 					<input type="hidden" value="{{ cfg }}.old" name="oldconfig"> 
 					<textarea name="config" class="config" rows="35" cols="100">{{ config }}</textarea> 
 					<p>
-					{% if service == 'haproxy' %}
+					{% if not keepalived %}
 						<button type="submit" value="test" name="save" class="btn btn-default">Just test</button>
 					{% endif %}
 						<button type="submit" value="save" name="save" class="btn btn-default">Just save</button>
 						<button type="submit" value="" name="" class="btn btn-default">Save and restart</button>
-					{% if service != 'keepalived' %}
+					{% if not keepalived %}
 						<button type="submit" value="reload" name="save" class="btn btn-default">Save and reload</button>
 					{% endif %}
 					</p>
@@ -75,16 +82,17 @@
 			<div class="alert alert-success">Config is ok</div>
 			<a href="viewsttats.py?serv={{ serv }}" target="_blank" title="View stats">Go to view stats</a>
 		{% endif %}
+		<script>window.history.pushState("Config", "Config", cur_url[0])</script>
 	{% endif %}
 	</center>
 <script> 
 	if (cur_url[1].split('&')[1] == 'showMap') {
 		showMap();		
 	}
-	if (cur_url[1].split('&')[1] == 'showCompare' || cur_url[1].split('&')[2] == 'showCompare') {
+	if (cur_url[1].split('&')[1] == 'showCompare') {
 		showCompareConfigs();		
 	}
-	if (cur_url[1].split('&')[2] == 'showConfig') {
+	if (cur_url[1].split('&')[1] == 'showConfig') {
 		showConfig();		
 	}	
 	$('textarea').linenumbers({col_width: '25px'});

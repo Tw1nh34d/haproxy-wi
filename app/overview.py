@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import funct, sql
 import create_db
+import os, http.cookies
 from jinja2 import Environment, FileSystemLoader
-env = Environment(loader=FileSystemLoader('templates/'), autoescape=True)
+env = Environment(loader=FileSystemLoader('templates/'))
 template = env.get_template('ovw.html')
 	
 print('Content-type: text/html\n')
@@ -14,9 +14,12 @@ create_db.update_all_silent()
 funct.check_login()
 
 try:
-	user, user_id, role, token, servers = funct.get_users_params()
+	cookie = http.cookies.SimpleCookie(os.environ.get("HTTP_COOKIE"))
+	user_id = cookie.get('uuid')
+	user = sql.get_user_name_by_uuid(user_id.value)
 	users = sql.select_users()
 	groups = sql.select_groups()
+	token = sql.get_token(user_id.value)
 	cmd = "ps ax |grep checker_mas |grep -v grep |wc -l"
 	checker_master, stderr = funct.subprocess_execute(cmd)
 	cmd = "ps ax |grep checker_worker |grep -v grep |wc -l"
@@ -29,34 +32,14 @@ try:
 	keep_alive, stderr = funct.subprocess_execute(cmd)
 	cmd = "ps ax |grep '(wsgi:api)'|grep -v grep|wc -l"
 	api, stderr = funct.subprocess_execute(cmd)
-	cmd = "ps ax |grep grafana|grep -v grep|wc -l"
-	grafana, stderr = funct.subprocess_execute(cmd)
-	cmd = "ps ax |grep 'prometheus ' |grep -v grep|wc -l"
-	prometheus, stderr = funct.subprocess_execute(cmd)
 except:
-	role = ''
-	user = ''
-	users = ''
-	groups = ''
-	roles = ''
-	metrics_master = ''
-	metrics_worker = ''
-	checker_master = ''
-	checker_worker = ''
-	keep_alive = ''
-	api = ''
-	grafana = ''
-	prometheus = ''
-	versions = ''
-	haproxy_wi_log = ''
-	servers = ''
-	stderr = ''
+	pass
 
 
 template = template.render(h2 = 1,
 							autorefresh = 1,
 							title = "Overview",
-							role = role,
+							role = sql.get_user_role_by_uuid(user_id.value),
 							user = user,
 							users = users,
 							groups = groups,
@@ -67,17 +50,8 @@ template = template.render(h2 = 1,
 							checker_worker = ''.join(checker_worker),
 							keep_alive = ''.join(keep_alive),
 							api = ''.join(api),
-							grafana = ''.join(grafana),
-							prometheus = ''.join(prometheus),
-							haproxy_wi_log_id = funct.haproxy_wi_log(log_id=1, file="haproxy-wi-", with_date=1),
-							metrics_log_id = funct.haproxy_wi_log(log_id=1, file="metrics-", with_date=1),
-							checker_log_id = funct.haproxy_wi_log(log_id=1, file="checker-", with_date=1),
-							keep_alive_log_id = funct.haproxy_wi_log(log_id=1, file="keep_alive"),
-							checker_error_log_id = funct.haproxy_wi_log(log_id=1, file="checker-error"),
-							metrics_error_log_id = funct.haproxy_wi_log(log_id=1, file="metrics-error"),
+							date = funct.get_data('logs'),
 							error = stderr,
 							versions = funct.versions(),
-							haproxy_wi_log = funct.haproxy_wi_log(),
-							servers = servers,
 							token = token)
-print(template)
+print(template)											

@@ -2,7 +2,6 @@
 {% block content %}	
 {% from 'include/input_macros.html' import input, checkbox %}
 <script src="/inc/users.js"></script>
-<input type="hidden" id="service" value="{{service}}" />
 <table class="overview">
 	<tr class="overviewHead">
 		<td class="padding10 first-collumn" style="width: 10%;">
@@ -12,7 +11,7 @@
 				Server
 			{% endif %}
 		</td>
-		{% if onclick != 'viewLogs()' and service != 'nginx' %}
+		{% if onclick != 'viewLogs()' %}
 		<td style="width: 5%;">WAF logs</td>
 		{% endif %}
 		<td style="width: 10%;">Number rows</td>
@@ -31,7 +30,7 @@
 					<select autofocus required name="serv" id="{{ select_id }}">									
 						<option disabled selected>Choose log</option>
 						{% for select in selects %}
-							{% if select.0|int() == serv|int() %}
+							{% if select.0 == serv %}
 								<option value="{{ select.0 }}" selected>{{ select.1 }}</option>
 							{% else %}
 								<option value="{{ select.0 }}">{{ select.1 }}</option>
@@ -42,7 +41,7 @@
 						{% include 'include/select.html' %}
 					{% endif %}			
 		</td>
-		{% if onclick != 'viewLogs()' and service != 'nginx' %}
+		{% if onclick != 'viewLogs()' %}
 		<td>
 			{{ checkbox('waf') }}
 		</td>

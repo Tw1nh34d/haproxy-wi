@@ -50,17 +50,12 @@ $( function() {
 		autoFocus: true,
 		minLength: -1
 	});
-	var wait_mess = '<div class="alert alert-warning">Please don\'t close and don\'t represh page. Wait until the work is completed. This may take some time </div>'
 	var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 	$('#create').click(function() {
 		var hap = 0;
-		var nginx = 0;
 		var syn_flood = 0;
 		if ($('#hap').is(':checked')) {
 			hap = '1';
-		}
-		if ($('#nginx').is(':checked')) {
-			nginx = '1';
 		}		
 		if ($('#syn_flood').is(':checked')) {
 			syn_flood = '1';
@@ -74,7 +69,7 @@ $( function() {
 			} else if ($("#master").val() == $("#slave").val() ){
 				$("#ajax").html('<div class="alert alert-danger">Master and slave must be diff servers</div>')
 			} else {
-				$("#ajax").html(wait_mess);
+				$("#ajax").html('<div class="alert alert-warning">Please don\'t close and don\'t represh page. Wait until the work is completed. This may take some time </div>');
 				$.ajax( {
 					url: "options.py",
 					data: {
@@ -83,7 +78,6 @@ $( function() {
 						interface: $("#interface").val(),
 						vrrpip: $('#vrrp-ip').val(),
 						hap: hap,
-						nginx: nginx,
 						syn_flood: syn_flood,
 						token: $('#token').val()
 					},
@@ -91,16 +85,16 @@ $( function() {
 					success: function( data ) { 
 						data = data.replace(/\s+/g,' ');
 						if (data.indexOf('error') != '-1' || data.indexOf('alert') != '-1' || data.indexOf('FAILED') != '-1') {
-							$("#ajax").html('<div class="alert alert-danger">'+data+'</div>');
+							$("#ajax").html('<div class="alert alert-danger">'+data+'</data>');
 						} else if (data.indexOf('info') != '-1' ){
-							$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
+							$("#ajax").html('<div class="alert alert-info">'+data+'</data>');
 						} else if (data.indexOf('success') != '-1' ){
 							$('.alert-danger').remove();
-							$("#ajax").html('<div class="alert alert-success">'+data+'</div>');				
+							$("#ajax").html('<div class="alert alert-success">'+data+'</data>');				
 						} else {
 							$('.alert-danger').remove();
 							$('.alert-warning').remove();
-							$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
+							$("#ajax").html('<div class="alert alert-info">'+data+'</data>');
 						}
 					}
 				} );
@@ -120,7 +114,7 @@ $( function() {
 			} else if(! $("#vrrp-ip-add").val().match(ipformat)) {
 				$("#ajax").html('<div class="alert alert-danger">Please enter IP in "VRRP IP" field</div>')
 			} else {
-				$("#ajax").html(wait_mess);
+				$("#ajax").html('<div class="alert alert-warning">Please don\'t close and don\'t represh page. Wait until the work is completed. This may take some time </div>');
 				$.ajax( {
 					url: "options.py",
 					data: {
@@ -135,14 +129,14 @@ $( function() {
 					success: function( data ) { 
 						data = data.replace(/\s+/g,' ');
 						if (data.indexOf('error') != '-1') {
-							$("#ajax").html('<div class="alert alert-danger">'+data+'</div>');
+							$("#ajax").html('<div class="alert alert-danger">'+data+'</data>');
 						} else if (data.indexOf('success') != '-1'){
 							$('.alert-danger').remove();
-							$("#ajax").html('<div class="alert alert-success">'+data+'</div>');				
+							$("#ajax").html('<div class="alert alert-success">'+data+'</data>');				
 						} else {
 							$('.alert-danger').remove();
 							$('.alert-warning').remove();
-							$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
+							$("#ajax").html('<div class="alert alert-info">'+data+'</data>');
 						}
 					}
 				} );
@@ -154,7 +148,7 @@ $( function() {
 		if ($('#syn_flood').is(':checked')) {
 			syn_flood = '1';
 		}
-		$("#ajax").html(wait_mess);
+		$("#ajax").html('<div class="alert alert-warning">Please don\'t close and don\'t represh page. Wait until the work is completed. This may take some time </div>');
 		$.ajax( {
 			url: "options.py",
 			data: {
@@ -167,247 +161,23 @@ $( function() {
 			success: function( data ) { 
 			data = data.replace(/\s+/g,' ');
 				if (data.indexOf('error') != '-1' || data.indexOf('FAILED') != '-1') {
-					$("#ajax").html('<div class="alert alert-danger">'+data+'</div>');
+					$("#ajax").html('<div class="alert alert-danger">'+data+'</data>');
 				} else if (data.indexOf('success') != '-1' ){
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-success">'+data+'</div>');						
+					$("#ajax").html('<div class="alert alert-success">'+data+'</data>');				
 				} else if (data.indexOf('Info') != '-1' ){
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
+					$("#ajax").html('<div class="alert alert-info">'+data+'</data>');
 				} else {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
+					$("#ajax").html('<div class="alert alert-info">'+data+'</data>');
 				}
 			}
 		} );	
 	});	
-	$('#nginx_install').click(function() {
-		$("#ajax").html('')
-		var syn_flood = 0;
-		if ($('#nginx_syn_flood').is(':checked')) {
-			syn_flood = '1';
-		}
-		$("#ajax").html(wait_mess);
-		$.ajax( {
-			url: "options.py",
-			data: {
-				install_nginx: $('#nginxaddserv').val(),
-				syn_flood: syn_flood,
-				token: $('#token').val()
-				},
-			type: "POST",
-			success: function( data ) { 
-			data = data.replace(/\s+/g,' ');
-				if (data.indexOf('error') != '-1' || data.indexOf('FAILED') != '-1') {
-					$("#ajax").html('<div class="alert alert-danger">'+data+'</div>');
-				} else if (data.indexOf('success') != '-1' ){
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-success">'+data+'</div>');				
-				} else if (data.indexOf('Info') != '-1' ){
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
-				} else {
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
-				}
-			}
-		} );	
-	});	
-	$('#grafna_install').click(function() {
-		$("#ajax").html('')
-		$("#ajax").html(wait_mess);
-		$.ajax( {
-			url: "options.py",
-			data: {
-				install_grafana: '1',
-				token: $('#token').val()
-				},
-			type: "POST",
-			success: function( data ) { 
-			data = data.replace(/\s+/g,' ');
-				if (data.indexOf('FAILED') != '-1') {
-					$("#ajax").html('<div class="alert alert-danger">'+data+'</div>');
-				} else if (data.indexOf('success') != '-1' ){
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-success">'+data+'</div>');				
-				} else if (data.indexOf('Info') != '-1' ){
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
-				} else {
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
-				}
-			}
-		} );	
-	});	
-	$('#haproxy_exp_install').click(function() {
-		$("#ajax").html('')
-		$("#ajax").html(wait_mess);
-		$.ajax( {
-			url: "options.py",
-			data: {
-				haproxy_exp_install: $('#haproxy_exp_addserv').val(),
-				token: $('#token').val()
-				},
-			type: "POST",
-			success: function( data ) { 
-			data = data.replace(/\s+/g,' ');
-				if (data.indexOf('error') != '-1' || data.indexOf('FAILED') != '-1') {
-					$("#ajax").html('<div class="alert alert-danger">'+data+'</div>');
-				} else if (data.indexOf('success') != '-1' ){
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-success">'+data+'</div>');	
-					$('#cur_haproxy_exp_ver').text('HAProxy expoter is installed');
-					$('#haproxy_exp_install').text('Update');
-				} else if (data.indexOf('Info') != '-1' ){
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
-				} else {
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
-				}
-			}
-		} );	
-	});	
-	$('#nginx_exp_install').click(function() {
-		$("#ajax").html('')
-		$("#ajax").html(wait_mess);
-		$.ajax( {
-			url: "options.py",
-			data: {
-				nginx_exp_install: $('#nginx_exp_addserv').val(),
-				token: $('#token').val()
-				},
-			type: "POST",
-			success: function( data ) { 
-			data = data.replace(/\s+/g,' ');
-				if (data.indexOf('error') != '-1' || data.indexOf('FAILED') != '-1') {
-					$("#ajax").html('<div class="alert alert-danger">'+data+'</div>');
-				} else if (data.indexOf('success') != '-1' ){
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-success">'+data+'</div>');	
-					$('#cur_nginx_exp_ver').text('Nginx expoter is installed');
-					$('#nginx_exp_install').text('Update');
-				} else if (data.indexOf('Info') != '-1' ){
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
-				} else {
-					$('.alert-danger').remove();
-					$('.alert-warning').remove();
-					$("#ajax").html('<div class="alert alert-info">'+data+'</div>');
-				}
-			}
-		} );	
-	});	
-	$( "#haproxyaddserv" ).on('selectmenuchange',function() {
-		$.ajax( {
-			url: "options.py",
-			data: {
-				get_hap_v: 1,
-				serv: $('#haproxyaddserv option:selected').val(),
-				token: $('#token').val()
-			},
-			type: "POST",
-			success: function( data ) {	
-				data = data.replace(/^\s+|\s+$/g,'');
-				if(data != '') {				
-					data = data+'-1';
-					$('#cur_hap_ver').text(data);
-					$('#install').text('Update');
-					$('#install').attr('title', 'Update HAProxy');
-				} else {
-					$('#cur_hap_ver').text('HAProxy has not installed');
-					$('#install').text('Install');
-					$('#install').attr('title', 'Install HAProxy');
-				}
-			}
-		} );
-	});
-	$( "#nginxaddserv" ).on('selectmenuchange',function() {
-		$.ajax( {
-			url: "options.py",
-			data: {
-				get_nginx_v: 1,
-				serv: $('#nginxaddserv option:selected').val(),
-				token: $('#token').val()
-			},
-			type: "POST",
-			success: function( data ) {	
-				data = data.replace(/^\s+|\s+$/g,'');
-				if(data.indexOf('bash') != '-1') {			
-					$('#cur_nginx_ver').text('Nginx has not installed');
-					$('#nginx_install').text('Install');
-					$('#nginx_install').attr('title', 'Install Nginx');				
-				} else {
-					$('#cur_nginx_ver').text(data);
-					$('#nginx_install').text('Update');
-					$('#nginx_install').attr('title', 'Update Nginx');
-				}
-			}
-		} );
-	});
-	$( "#haproxy_exp_addserv" ).on('selectmenuchange',function() {
-		$.ajax( {
-			url: "options.py",
-			data: {
-				get_exporter_v: 'haproxy_exporter',
-				serv: $('#haproxy_exp_addserv option:selected').val(),
-				token: $('#token').val()
-			},
-			type: "POST",
-			success: function( data ) {	
-				data = data.replace(/^\s+|\s+$/g,'');
-				console.log(data)
-				if(data == 'Active:') {				
-					$('#cur_haproxy_exp_ver').text('HAProxy expoter is installed');
-					$('#haproxy_exp_install').text('Update');
-					$('#haproxy_exp_install').attr('title', 'Update HAProxy expoter');
-				} else {
-					$('#cur_haproxy_exp_ver').text('HAProxy expoter has not installed');
-					$('#haproxy_exp_install').text('Install');
-					$('#haproxy_exp_install').attr('title', 'Install HAProxy expoter');
-				}
-			}
-		} );
-	});
-	$( "#nginx_exp_addserv" ).on('selectmenuchange',function() {
-		$.ajax( {
-			url: "options.py",
-			data: {
-				get_exporter_v: 'nginx_exporter',
-				serv: $('#nginx_exp_addserv option:selected').val(),
-				token: $('#token').val()
-			},
-			type: "POST",
-			success: function( data ) {	
-				data = data.replace(/^\s+|\s+$/g,'');
-				console.log(data)
-				if(data == 'Active:') {				
-					$('#cur_nginx_exp_ver').text('Nginx expoter is installed');
-					$('#nginx_exp_install').text('Update');
-					$('#nginx_exp_install').attr('title', 'Update Nginx expoter');
-				} else {
-					$('#cur_nginx_exp_ver').text('Nginx expoter has not installed');
-					$('#nginx_exp_install').text('Install');
-					$('#nginx_exp_install').attr('title', 'Install Nginx expoter');
-				}
-			}
-		} );
-	});
 	$('#update_haproxy_wi').click(function() {
 		$("#ajax-update").html('')
 		$("#ajax-update").html('<div class="alert alert-warning">Please don\'t close and don\'t represh page. Wait until the work is completed. This may take some time </div>');
@@ -421,47 +191,47 @@ $( function() {
 			success: function( data ) { 
 			data = data.replace(/\s+/g,' ');
 				if (data.indexOf('error') != '-1' || data.indexOf('Failed') != '-1') {
-					$("#ajax").html('<div class="alert alert-danger">'+data+'</div>');
+					$("#ajax").html('<div class="alert alert-danger">'+data+'</data>');
 				} else if (data.indexOf('Complete!') != '-1'){
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-success">Update was success!</div>');				
+					$("#ajax-update").html('<div class="alert alert-success">Update was success!</data>');				
 				} else if (data.indexOf('Unauthorized') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-danger">It is seems like you Unauthorized in the HAProxy-WI repository. How to get HAProxy-WI auth you can read <a href="https://haproxy-wi.org/installation.py" title="How to get HAProxy-WI auth">hear</a> </div>');
+					$("#ajax-update").html('<div class="alert alert-danger">It is seems like you Unauthorized in the HAProxy-WI repository. How to get HAProxy-WI auth you can read <a href="https://haproxy-wi.org/installation.py" title="How to get HAProxy-WI auth">hear</a> </data>');
 				} else if (data.indexOf('but not installed') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-warning">You have settings for HAProxy-WI repository, but installed HAProxy-WI without repository. Please reinstall with yum or use update.sh</div>');
+					$("#ajax-update").html('<div class="alert alert-warning">You have settings for HAProxy-WI repository, but installed HAProxy-WI without repository. Please reinstall with yum or use update.sh</data>');
 				} else if (data.indexOf('No Match for argument') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-warning">It is seems like you do not have HAProxy-WI repository settings. Please read docs for<a href="https://haproxy-wi.org/updates.py">detail</a></div>');
+					$("#ajax-update").html('<div class="alert alert-warning">It is seems like you do not have HAProxy-WI repository settings. Please read docs for<a href="https://haproxy-wi.org/updates.py">detail</a></data>');
 				} else if (data.indexOf('password for') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-warning">It is seems like you need add Apache user to sudoers. Please read docs for<a href="https://haproxy-wi.org/updates.py">detail</a></div>');
+					$("#ajax-update").html('<div class="alert alert-warning">It is seems like you need add Apache user to sudoers. Please read docs for<a href="https://haproxy-wi.org/updates.py">detail</a></data>');
 				} else if (data.indexOf('No packages marked for update') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-info">It is seems like you have the lastest version HAProxy-WI</div>');
+					$("#ajax-update").html('<div class="alert alert-info">It is seems like you have the lastest version HAProxy-WI</data>');
 				} else if (data.indexOf('Connection timed out') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-danger">Cannot connect to HAProxy-WI repository. Connection timed out</div>');
+					$("#ajax-update").html('<div class="alert alert-danger">Cannot connect to HAProxy-WI repository. Connection timed out</data>');
 				} else if (data.indexOf('--disable') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-danger">It is seems like you have problem with your repositorys.</div>');
+					$("#ajax-update").html('<div class="alert alert-danger">It is seems like you have problem with your repositorys.</data>');
 				} else if (data.indexOf('Unauthorized') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-danger">It is seems like you Unauthorized in the HAProxy-WI repository.</div>');
+					$("#ajax-update").html('<div class="alert alert-danger">It is seems like you Unauthorized in the HAProxy-WI repository.</data>');
 				} else if (data.indexOf('Error: Package') != '-1') {
 					$('.alert-danger').remove();
 					$('.alert-warning').remove();
-					$("#ajax-update").html('<div class="alert alert-danger">'+data+'</div>');
+					$("#ajax-update").html('<div class="alert alert-danger">'+data+'</data>');
 				}
 			}
 		} ); 	
@@ -470,7 +240,7 @@ $( function() {
 		$('#error').remove();	
 		$('.alert-danger').remove();	
 		$.ajax( {
-			url: "options.py",
+			url: "sql.py",
 			data: {
 				newgroup: "1",
 				groupname: $('#new-group-add').val(),
@@ -504,7 +274,7 @@ $( function() {
 			ssh_enable = '1';
 		}
 		$.ajax( {
-			url: "options.py",
+			url: "sql.py",
 			data: {
 				new_ssh: $('#new-ssh-add').val(),
 				new_group: $('#new-sshgroup').val(),
@@ -545,7 +315,7 @@ $( function() {
 		$('#error').remove();	
 		$('.alert-danger').remove();	
 		$.ajax( {
-			url: "options.py",
+			url: "sql.py",
 			data: {
 				newtelegram: $('#telegram-token-add').val(),
 				chanel: $('#telegram-chanel-add').val(),
@@ -651,34 +421,6 @@ $( function() {
 			$('#telegram-add-table').show("blind", "fast");
 		} 
 	});
-	var addBackupDialog = $( "#backup-add-table" ).dialog({
-			autoOpen: false,
-			resizable: false,
-			height: "auto",
-			width: 600,
-			modal: true,
-			title: "Create a new backup job",
-			show: {
-				effect: "fade",
-				duration: 200
-			},
-			hide: {
-				effect: "fade",
-				duration: 200
-			},
-			buttons: {
-				"Add": function() {	
-					addBackup();
-				},
-				Cancel: function() {
-					$( this ).dialog( "close" );
-					clearTips();
-				}
-			}
-		});
-	$('#add-backup-button').click(function() {
-		addBackupDialog.dialog('open');		
-	});
 	$( "#ajax-users input" ).change(function() {
 		var id = $(this).attr('id').split('-');
 		updateUser(id[1])
@@ -712,6 +454,8 @@ $( function() {
 	$( "#settings input" ).change(function() {
 		var id = $(this).attr('id');
 		var val = $(this).val();
+		console.log(id)
+		console.log(val)
 		updateSettings(id, val);
 	});
 	$('#new-ssh_enable').click(function() {
@@ -733,14 +477,6 @@ $( function() {
 	$( "#checker_table select" ).on('selectmenuchange',function() {
 		var id = $(this).attr('id').split('-');
 		updateTelegram(id[1])
-	});
-	$( "#ajax-backup-table input" ).change(function() {
-		var id = $(this).attr('id').split('-');
-		updateBackup(id[2])
-	});
-	$( "#ajax-backup-table select" ).on('selectmenuchange',function() {
-		var id = $(this).attr('id').split('-');
-		updateBackup(id[2])
 	});
 	$('#search_ldap_user').click(function() {
 		var valid = true;
@@ -812,7 +548,7 @@ function addUser() {
 	}
 	if (valid) {
 		$.ajax( {
-			url: "options.py",
+			url: "sql.py",
 			data: {
 				newuser: "1",
 				newusername: $('#new-username').val(),
@@ -853,19 +589,23 @@ function addServer() {
 	var cred = $('#credentials').val();
 	var typeip = 0;
 	var enable = 0;
-	var haproxy = 0;
-	var nginx = 0;
+	var alert_en = 0;
+	var metrics = 0;
+	var active = 0;
 	if ($('#typeip').is(':checked')) {
 		typeip = '1';
 	}
 	if ($('#enable').is(':checked')) {
 		enable = '1';
 	}
-	if ($('#haproxy').is(':checked')) {
-		haproxy = '1';
+	if ($('#alert').is(':checked')) {
+		var alert_en = '1';
 	}
-	if ($('#nginx').is(':checked')) {
-		nginx = '1';
+	if ($('#metrics').is(':checked')) {
+		var metrics = '1';
+	}
+	if ($('#active').is(':checked')) {
+		var active = '1';
 	}
 	allFields = $( [] ).add( $('#new-server-add') ).add( $('#new-ip') ).add( $('#new-port') )
 	allFields.removeClass( "ui-state-error" );
@@ -874,7 +614,7 @@ function addServer() {
 	valid = valid && checkLength( $('#new-port'), "Port", 1 );
 	if (valid) {
 		$.ajax( {
-			url: "options.py",
+			url: "sql.py",
 			data: {
 				newserver: "1",
 				servername: servername,
@@ -882,13 +622,14 @@ function addServer() {
 				newport: $('#new-port').val(),
 				newservergroup: newservergroup,
 				typeip: typeip,
-				haproxy: haproxy,
-				nginx: nginx,
 				enable: enable,
 				slave: $('#slavefor' ).val(),
 				cred: cred,
+				alert_en: alert_en,
+				metrics: metrics,
 				page: cur_url[0],
 				desc: $('#desc').val(),
+				active: active,
 				token: $('#token').val()
 			},
 			type: "POST",
@@ -904,14 +645,14 @@ function addServer() {
 					$('.alert-danger').remove();
 					$("#ajax-servers").append(data);
 					$(".newserver").addClass( "update", 1000 );
+					setTimeout(function() {
+						$( ".newserver" ).removeClass( "update" );
+					}, 2500 );		
 					$( "input[type=submit], button" ).button();
 					$( "input[type=checkbox]" ).checkboxradio();
 					$( ".controlgroup" ).controlgroup();
 					$( "select" ).selectmenu();
-					$.getScript(awesome);
-					setTimeout(function() {
-						$( ".newserver" ).removeClass( "update" );
-					}, 2500 );							
+					$.getScript(awesome);					
 				}
 			}					
 		} );
@@ -919,62 +660,10 @@ function addServer() {
 		$( "#server-add-table" ).dialog("close" );
 	}
 }
-function addBackup() {
-	var valid = true;
-	$('#error').remove();	
-	allFields = $( [] ).add( $('#backup-server') ).add( $('#rserver') ).add( $('#rpath') ).add( $('#backup-time') ).add( $('#backup-credentials') )
-	allFields.removeClass( "ui-state-error" );
-	valid = valid && checkLength( $('#backup-server'), "backup server ", 1 );
-	valid = valid && checkLength( $('#rserver'), "remote server", 1 );
-	valid = valid && checkLength( $('#rpath'), "remote path", 1 );
-	valid = valid && checkLength( $('#backup-time'), "backup time", 1 );
-	valid = valid && checkLength( $('#backup-credentials'), "backup credentials", 1 );
-	if (valid) {
-		$.ajax( {
-			url: "options.py",
-			data: {
-				backup: '1',
-				server: $('#backup-server').val(),
-				rserver: $('#rserver').val(),
-				rpath: $('#rpath').val(),
-				type: $('#backup-type').val(),
-				time: $('#backup-time').val(),
-				cred: $('#backup-credentials').val(),
-				description: $('#backup-description').val(),
-				token: $('#token').val()
-			},
-			type: "POST",
-			success: function( data ) {
-				data = data.replace(/\s+/g,' ');
-				if (data.indexOf('error') != '-1') {
-					$("#ajax-backup").html('<div class="alert alert-danger" style="width: 50%;">'+data+'</div><br /><br />');
-					$('#errorMess').click(function() {
-						$('#error').remove();
-						$('.alert-danger').remove();
-					});
-				} else if (data.indexOf('success') != '-1') {
-					$('.alert-danger').remove();
-					$("#ajax-backup-table").append(data);
-					$(".newbackup").addClass( "update", 1000 );
-					setTimeout(function() {
-						$( ".newbackup" ).removeClass( "update" );
-					}, 2500 );		
-					$( "select" ).selectmenu();
-					$.getScript(awesome);														
-				} else if (data.indexOf('info') != '-1') {
-					$('.alert-danger').remove();
-					$("#ajax-backup").html('<div class="alert alert-info">'+data+'</div><br />');											
-				}	
-			}
-		} );
-		clearTips();
-		$( "#backup-add-table" ).dialog("close" );
-	}
-}
 function updateSettings(param, val) {
 	$('.alert-danger').remove();
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			updatesettings: param,
 			val: val,
@@ -1104,24 +793,6 @@ function confirmDeleteTelegram(id) {
       }
     });
 }
-function confirmDeleteBackup(id) {
-	 $( "#dialog-confirm" ).dialog({
-      resizable: false,
-      height: "auto",
-      width: 400,
-      modal: true,
-	  title: "Are you sure you want to delete job for" +$('#backup-server-'+id).val() + "?",
-      buttons: {
-        "Delete": function() {
-			$( this ).dialog( "close" );	
-			removeBackup(id);
-        },
-        Cancel: function() {
-			$( this ).dialog( "close" );
-        }
-      }
-    });
-}
 function cloneServer(id) {
 	$( "#add-server-button" ).trigger( "click" );
 	if ($('#enable-'+id).is(':checked')) {
@@ -1134,20 +805,25 @@ function cloneServer(id) {
 	} else {
 		$('#typeip').prop('checked', false)
 	}
-	if ($('#haproxy-'+id).is(':checked')) {
-		$('#haproxy').prop('checked', true)
+	if ($('#alert-'+id).is(':checked')) {
+		$('#alert').prop('checked', true)
 	} else {
-		$('#haproxy').prop('checked', false)
+		$('#alert').prop('checked', false)
 	}
-	if ($('#nginx-'+id).is(':checked')) {
-		$('#nginx').prop('checked', true)
+	if ($('#metrics-'+id).is(':checked')) {
+		$('#metrics').prop('checked', true)
 	} else {
-		$('#nginx').prop('checked', false)
+		$('#metrics').prop('checked', false)
+	}
+	if ($('#active-'+id).is(':checked')) {
+		$('#active').prop('checked', true)
+	} else {
+		$('#active').prop('checked', false)
 	}
 	$('#enable').checkboxradio("refresh");
 	$('#typeip').checkboxradio("refresh");
-	$('#haproxy').checkboxradio("refresh");
-	$('#nginx').checkboxradio("refresh");
+	$('#alert').checkboxradio("refresh");
+	$('#active').checkboxradio("refresh");
 	$('#new-server-add').val($('#hostname-'+id).val())
 	$('#new-ip').val($('#ip-'+id).val())
 	$('#new-port').val($('#port-'+id).val())
@@ -1183,21 +859,10 @@ function cloneTelegram(id) {
 	$('#telegram-token-add').val($('#telegram-token-'+id).val())
 	$('#telegram-chanel-add').val($('#telegram-chanel-'+id).val())
 }
-function cloneBackup(id) {
-	$( "#add-backup-button" ).trigger( "click" );
-	$('#rserver').val($('#backup-rserver-'+id).val())
-	$('#rpath').val($('#backup-rpath-'+id).val())
-	$('#backup-type').val($('#backup-type-'+id+' option:selected').val()).change()
-	$('#backup-type').selectmenu("refresh");
-	$('#backup-time').val($('#backup-time-'+id+' option:selected').val()).change()
-	$('#backup-time').selectmenu("refresh");
-	$('#backup-credentials').val($('#backup-credentials-'+id+' option:selected').val()).change()
-	$('#backup-credentials').selectmenu("refresh");
-}
 function removeUser(id) {
 	$("#user-"+id).css("background-color", "#f2dede");
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			userdel: id,
 			token: $('#token').val()
@@ -1214,7 +879,7 @@ function removeUser(id) {
 function removeServer(id) {
 	$("#server-"+id).css("background-color", "#f2dede");
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			serverdel: id,
 			token: $('#token').val()
@@ -1231,7 +896,7 @@ function removeServer(id) {
 function removeGroup(id) {
 	$("#group-"+id).css("background-color", "#f2dede");
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			groupdel: id,
 			token: $('#token').val()
@@ -1250,7 +915,7 @@ function removeGroup(id) {
 function removeSsh(id) {
 	$("#ssh-table-"+id).css("background-color", "#f2dede");
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			sshdel: id,
 			token: $('#token').val()
@@ -1269,7 +934,7 @@ function removeSsh(id) {
 function removeTelegram(id) {
 	$("#telegram-table-"+id).css("background-color", "#f2dede");
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			telegramdel: id,
 			token: $('#token').val()
@@ -1279,26 +944,6 @@ function removeTelegram(id) {
 			data = data.replace(/\s+/g,' ');
 			if(data == "Ok ") {
 				$("#telegram-table-"+id).remove();
-			}
-		}					
-	} );	
-}
-function removeBackup(id) {
-	$("#backup-table-"+id).css("background-color", "#f2dede");
-	$.ajax( {
-		url: "options.py",
-		data: {
-			deljob: id,
-			cred: $('#backup-credentials-'+id).val(),
-			server: $('#backup-server-'+id).text(),
-			rserver: $('#backup-rserver-'+id).val(),
-			token: $('#token').val()
-		},
-		type: "POST",
-		success: function( data ) {
-			data = data.replace(/\s+/g,' ');
-			if(data.indexOf('Ok') != '-1') {
-				$("#backup-table-"+id).remove();
 			}
 		}					
 	} );	
@@ -1317,7 +962,7 @@ function updateUser(id) {
 		activeuser = '1';
 	}
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			updateuser: $('#login-'+id).val(),
 			email: $('#email-'+id).val(),
@@ -1349,7 +994,7 @@ function updateUser(id) {
 function updateGroup(id) {
 	$('#error').remove();	
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			updategroup: $('#name-'+id).val(),
 			descript: $('#descript-'+id).val(),
@@ -1381,39 +1026,44 @@ function updateServer(id) {
 	$('.alert-danger').remove();
 	var typeip = 0;
 	var enable = 0;
-	var haproxy = 0;
-	var nginx = 0;
+	var alert_en = 0;
+	var metrics = 0;
+	var active = 0;
 	if ($('#typeip-'+id).is(':checked')) {
 		typeip = '1';
-	}
-	if ($('#haproxy-'+id).is(':checked')) {
-		haproxy = '1';
-	}
-	if ($('#nginx-'+id).is(':checked')) {
-		nginx = '1';
 	}
 	if ($('#enable-'+id).is(':checked')) {
 		enable = '1';
 	}
-	var servergroup = $('#servergroup-'+id+' option:selected' ).val();
-	if (cur_url[0].split('#')[0] == "servers.py") {
-		 servergroup = $('#new-server-group-add').val();
+	if ($('#alert-'+id).is(':checked')) {
+		alert_en = '1';
 	}
-	console.log(servergroup)
+	if ($('#metrics-'+id).is(':checked')) {
+		metrics = '1';
+	}
+	if ($('#active-'+id).is(':checked')) {
+		active = '1';
+	}
+	var servergroup = $('#servergroup-'+id+' option:selected' ).val();
+	if (cur_url[0] == "servers.py") {
+		 servergroup = $('#servergroup-'+id).val();
+	}
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			updateserver: $('#hostname-'+id).val(),
+			ip: $('#ip-'+id).val(),
 			port: $('#port-'+id).val(),
 			servergroup: servergroup,
 			typeip: typeip,
-			haproxy: haproxy,
-			nginx: nginx,
 			enable: enable,
 			slave: $('#slavefor-'+id+' option:selected' ).val(),
 			cred: $('#credentials-'+id+' option:selected').val(),
 			id: id,
+			metrics: metrics,
+			alert_en: alert_en,
 			desc: $('#desc-'+id).val(),
+			active: active,
 			token: $('#token').val()
 		},
 		type: "POST",
@@ -1468,16 +1118,12 @@ function updateSSH(id) {
 	if ($('#ssh_enable-'+id).is(':checked')) {
 		ssh_enable = '1';
 	}
-	var group = $('#sshgroup-'+id).val();
-	if (cur_url[0].split('#')[0] == "servers.py") {
-		 group = $('#new-server-group-add').val();
-	}
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			updatessh: 1,
 			name: $('#ssh_name-'+id).val(),
-			group: group,
+			group: $('#sshgroup-'+id).val(),
 			ssh_enable: ssh_enable,
 			ssh_user: $('#ssh_user-'+id).val(),
 			ssh_pass: $('#ssh_pass-'+id).val(),
@@ -1510,11 +1156,11 @@ function updateSSH(id) {
 function updateTelegram(id) {
 	$('#error').remove();	
 	$.ajax( {
-		url: "options.py",
+		url: "sql.py",
 		data: {
 			updatetoken: $('#telegram-token-'+id).val(),
 			updategchanel: $('#telegram-chanel-'+id).val(),
-			updatetelegramgroup: $('#telegramgroup-'+id).val(),
+			updategroup: $('#telegramgroup-'+id).val(),
 			id: id,
 			token: $('#token').val()
 		},
@@ -1536,49 +1182,6 @@ function updateTelegram(id) {
 			}
 		}
 	} );
-}
-function updateBackup(id) {
-	$('#error').remove();	
-	if ($( "#backup-type-"+id+" option:selected" ).val() == "Choose server" || $('#backup-rserver-'+id).val() == '' || $('#backup-rpath-'+id).val() == '') {
-		$("#ajax-backup").html('<div class="alert alert-danger" style="margin: 10px;">All fields must be completed</div>');
-	} else {
-		console.log($('#backup-credentials-'+id).val())
-		console.log($('#backup-rpath-'+id).val())
-		console.log($('#backup-type-'+id).val())
-		console.log($('#backup-server-'+id).text())
-		console.log($('#backup-rserver-'+id).val())
-		$.ajax( {
-			url: "options.py",
-			data: {
-				backupupdate: id,
-				server: $('#backup-server-'+id).text(),
-				rserver: $('#backup-rserver-'+id).val(),
-				rpath: $('#backup-rpath-'+id).val(),
-				type: $('#backup-type-'+id).val(),
-				time: $('#backup-time-'+id).val(),
-				cred: $('#backup-credentials-'+id).val(),
-				description: $('#backup-description-'+id).val(),
-				token: $('#token').val()
-			},
-			type: "POST",
-			success: function( data ) {
-				data = data.replace(/\s+/g,' ');
-				if (data.indexOf('error') != '-1') {
-					$("#ajax-backup").html('<div class="alert alert-danger" style="margin: 10px;">'+data+'</div>');
-					$('#errorMess').click(function() {
-						$('#error').remove();
-						$('.alert-danger').remove();
-					});
-				} else {
-					$('.alert-danger').remove();
-					$("#backup-table-"+id).addClass( "update", 1000 );
-					setTimeout(function() {
-						$( "#backup-table-"+id ).removeClass( "update" );
-					}, 2500 );
-				}
-			}
-		} );
-	}
 }
 function showApacheLog(serv) {
 	var rows = $('#rows').val()
@@ -1620,10 +1223,10 @@ function checkSshConnect(ip) {
 		},
 		type: "POST",
 		success: function( data ) {
-			if (data.indexOf('error') != '-1') {
-				$("#checkSshConnect").html(data);
+			if (data.indexOf('danger') != '-1') {
+				$("#ajax").html(data);
 			} else {
-				$("#checkSshConnect").html("<div class='alert alert-success' style='margin: 0; margin-left: 15px;'>Connect is accepted<a title='Close' id='errorMess'><b>X</b></a></div>");
+				$("#ajax").html("<div class='alert alert-success' style='margin: 0;'>Connect accept<a title='Close' id='errorMess'><b>X</b></a></div>");
 			}
 			$('#errorMess').click(function() {
 				$('#error').remove();
@@ -1672,7 +1275,7 @@ function changeUserPassword(id, d) {
 		$('#missmatchpass').hide();
 		$('#error').remove();	
 		$.ajax( {
-			url: "options.py",
+			url: "sql.py",
 			data: {
 				updatepassowrd: pass,
 				id: id,

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-{% from 'include/input_macros.html' import input, select %}
+{% from 'include/input_macros.html' import input %}
 <style>
 .container {
 	margin-right: 0;
@@ -18,25 +18,45 @@
 		<li><a href="#checker">Checker</a></li>
 		<li><a href="#settings">Settings</a></li>
 		<li><a href="#updatehapwi">Update</a></li>
-		<li><a href="#backup">Backup</a></li>
 		{% include 'include/login.html' %}
 	</ul>
-	<ul id='browse_histroy'></ul>
 	<div id="users">
 		<table class="overview" id="ajax-users">
-			<thead>
 			<tr class="overviewHead">
-				<th class="padding10 first-collumn">Login name</th>
-				<th>Password</th>
-				<th>Active</th>
-				<th>Email</th>
-				<th>Role</th>
-				<th>Group</th>
-				<th></th>
-				<th></th>
+				<td class="padding10 first-collumn">Login name</td>
+				<td>Password</td>
+				<td>Active</td>
+				<td>Email</td>
+				<td>Role</td>
+				<td>Group</td>
+				<td></td>
+				<td></td>
 			</tr>
-			</thead>
-			<tbody>
+			<tr>
+			<script>
+				$( function() {
+				{% for user in users %}
+					$("#role-{{user.0}}" ).selectmenu({
+						  width: 100
+						});
+					$("#usergroup-{{user.0}}" ).selectmenu({
+						  width: 100
+						});
+					
+				{% endfor %}
+				{% for server in servers %}
+					$("#servergroup-{{ server.0}}" ).selectmenu({
+						  width: 100
+						});
+					$("#slavefor-{{server.0}}" ).selectmenu({
+						  width: 130
+						});
+					$("#credentials-{{server.0}}" ).selectmenu({
+						  width: 150
+						});
+				{% endfor %}
+				});
+			</script>
 		{% for user in users %}
 			<tr id="user-{{user.0}}" class="{{ loop.cycle('odd', 'even') }}">
 				{% include 'include/admin_users.html' %}
@@ -72,20 +92,17 @@
 				</td> 
 			</tr>
 		{% endfor %}
-		<tbody>
 		</table>
 		<br /><span class="add-button" title="Add user" id="add-user-button">+ Add</span>
 		<br /><br />
 	</div>
 	<div id="groups">
 		<table class="overview" id="ajax-group">
-			<thead>
 			<tr class="overviewHead">
-				<th class="padding10 first-collumn">Name</th>
-				<th>Description</th>
-				<th></th>
+				<td class="padding10 first-collumn">Name</td>
+				<td>Description</td>
+				<td></td>
 			</tr>
-			<tbody>
 		{% for group in groups %}
 			<tr id="group-{{ group.0 }}" class="{{ loop.cycle('odd', 'even') }}"> 
 			{% if group.1 == "All" %}
@@ -94,15 +111,13 @@
 				<td></td>
 			{% else %}
 				<td class="padding10 first-collumn">
-					{% set id = 'name-' + group.0|string() %}
-					{{ input(id, value=group.1) }}
+					<input type="text" id="name-{{ group.0 }}" value="{{ group.1 }}" class="form-control">
 				</td>
 				<td style="width: 100%;">
-					{% set id = 'descript-' + group.0|string() %}					
 					{% if group.2  != "None" %}
-						{{ input(id, value=group.2, size='60') }}
+						<input type="text" id="descript-{{ group.0 }}" value="{{ group.2 }}" class="form-control" size="60">
 					{% else %}
-						{{ input(id, value='', size='60') }}
+						<input type="text" id="descript-{{ group.0 }}" value="" class="form-control" size="60">
 					{% endif %}
 				</td>
 				<td>
@@ -111,7 +126,6 @@
 			{% endif %}
 			</tr>
 		{% endfor %}
-			</tbody>
 		</table>
 		<br /><span class="add-button" title="Add group" id="add-group-button">+ Add</span>
 		<br /><br />
@@ -125,7 +139,7 @@
 				<td class="padding10 first-collumn">
 					{{ input('new-group-add') }}
 				</td>
-				<td style="width: 100%;">
+				<td>
 					{{ input('new-desc', size="60") }}
 				</td>
 				<td>
@@ -139,36 +153,32 @@
 	</div>
 	<div id="servers">
 		<table class="overview" id="ajax-servers">
-			<thead>
 			<tr class="overviewHead">
-				<th class="padding10 first-collumn">Hostname</th>
-				<th class="ip-field">IP</th>
-				<th class="checkbox-head"><span title="SSH port">Port</span></th>
-				<th class="group-field">Group</th>
-				<th class="checkbox-head">Enable</th>
-				<th class="checkbox-head"><span title="Vitrual IP, something like VRRP">Virt</span></th>
-				<th class="checkbox-head">HAProxy</th>
-				<th class="checkbox-head">Nginx</th>
-				<th class="slave-field"><span title="Actions with master config will automatically apply on slave">Slave for</span></th>
-				<th class="cred-field">Credentials</th>
-				<th>Description</th>
-				<th></th>
-				<th></th>
-			</tr>	
-			</thead>
-			<tbody>
+				<td class="padding10 first-collumn">Hostname</td>
+				<td class="ip-field">IP</td>
+				<td class="checkbox-head"><span title="SSH port">Port</span></td></td>
+				<td class="group-field">Group</td>
+				<td class="checkbox-head">Enable</td>
+				<td class="checkbox-head"><span title="Vitrual IP, something like VRRP">Virt</span></td>
+				<td class="checkbox-head"><span title="Alert if backend change status. Before enable add Telgram chanel at Checker tab">Alert</span></td>
+				<td class="checkbox-head"><span title="Enable save and show metrics">Metrics</span></td>
+				<td class="checkbox-head"><span title="Keep start HAProxy service if down">Start</span></td>
+				<td class="slave-field"><span title="Actions with master config will automatically apply on slave">Slave for</span></td>
+				<td class="cred-field">Credentials</td>
+				<td>Description</td>
+				<td></td>
+				<td></td>
+			</tr>						
 		{% for server in servers %}
 			<tr id="server-{{server.0}}" class="{{ loop.cycle('odd', 'even') }}">
 				<td class="padding10 first-collumn">
-					{% set id = 'hostname-' + server.0|string() %}
-					{{ input(id, value=server.1, size='10') }}
+					<input type="text" id="hostname-{{server.0}}" value="{{server.1}}" class="form-control">
 				</td>
 				<td>
-					<span id="ip-{{server.0}}" style="margin-right: 6px;">{{server.2}}</span>
+					<input type="text" id="ip-{{server.0}}" value="{{server.2}}" size="14" class="form-control">
 				</td>
 				<td>
-					{% set id = 'port-' + server.0|string() %}
-					{{ input(id, value=server.10, size='2') }}
+					<input type="text" id="port-{{server.0}}" value="{{server.10}}" size="1" class="form-control">
 				</td>
 				<td>
 					<select id="servergroup-{{server.0}}" name="servergroup-{{server.0}}">
@@ -185,11 +195,9 @@
 				{% include 'include/admin_servers.html' %}
 			</tr>
 		{% endfor %}
-			</tbody>
 		</table>
 		<br /><span class="add-button" title="Add server" id="add-server-button">+ Add</span>
 		<br /><br />
-		<div id="checkSshConnect"></div>
 		<div class="add-note addName alert-info" style="width: inherit; margin-right: 15px;">
 			You can read the description of all parameters <a href="https://haproxy-wi.org/description.py?description=servers" title="Servers description" target="_blank">here</a>
 			or watch video <a href="https://haproxy-wi.org/description.py?description=setup" title="How to setup servers, group and SSH credentials" target="_blank">here</a>
@@ -214,8 +222,7 @@
 			{% for ssh in sshs %}
 				<tr style="width: 50%;" id="ssh-table-{{ssh.0}}" class="{{ loop.cycle('odd', 'even') }}">
 					<td class="first-collumn">
-						{% set id = 'ssh_name-' + ssh.0|string() %}
-						{{ input(id, value=ssh.1, size='10') }}
+						<input type="text" id="ssh_name-{{ssh.0}}" class="form-control" value="{{ssh.1}}" style="margin-bottom: 23px;">	
 					</td>
 					<td class="first-collumn" valign="top" style="padding-top: 15px;">
 						{% if ssh.2 == 1 %}
@@ -237,13 +244,12 @@
 					</td>
 					<td style="padding-top: 15px;">
 						<p>
-							{% set id = 'ssh_user-' + ssh.0|string() %}
-							{{ input(id, value=ssh.3, size='10') }}	
+							<input type="text" id="ssh_user-{{ssh.0}}" class="form-control" value="{{ssh.3}}">		
 						</p>
 						{% if ssh.2 == 1 %}
-							<input type="password" id="ssh_pass-{{ssh.0}}" class="form-control" value="{{ssh.4}}" style="display: none;" autocomplete="new-password">
+							<input type="password" id="ssh_pass-{{ssh.0}}" class="form-control" value="{{ssh.4}}" style="display: none;">
 						{% else %}
-							<input type="password" id="ssh_pass-{{ssh.0}}" class="form-control" value="{{ssh.4}}" autocomplete="new-password">
+							<input type="password" id="ssh_pass-{{ssh.0}}" class="form-control" value="{{ssh.4}}">
 						{% endif %}
 						<br>
 					</td>
@@ -334,12 +340,10 @@
 			{% for telegram in telegrams %}
 				<tr id="telegram-table-{{telegram.0}}" class="{{ loop.cycle('odd', 'even') }}">
 					<td class="first-collumn" style="padding-top: 20px;">
-						{% set id = 'telegram-token-' + telegram.0|string() %}
-						{{ input(id, value=telegram.1, style="margin-bottom: 23px;") }}
+						<input type="text" id="telegram-token-{{telegram.0}}" class="form-control" value="{{telegram.1}}" style="margin-bottom: 23px;">	
 					</td>
 					<td>
-						{% set id = 'telegram-chanel-' + telegram.0|string() %}
-						{{ input(id, value=telegram.2) }}	
+						<input type="text" id="telegram-chanel-{{telegram.0}}" class="form-control" value="{{telegram.2}}">		
 					</td>
 					<td>
 						<select id="telegramgroup-{{telegram.0}}" name="telegramgroup-{{telegram.0}}">
@@ -481,32 +485,6 @@
 		</div>
 		<div id="ajax-update"></div>
 	</div>
-	
-	<div id="backup">
-		<table class="overview" id="ajax-backup-table">
-			<tr class="overviewHead">
-				<td class="padding10 first-collumn">Servers</td>
-				<td class="padding10">Remote server</td>
-				<td class="padding10">Remote folder</td>
-				<td class="padding10">Backup type</td>
-				<td class="padding10">Period time</td>
-				<td class="padding10">Credentials</td>
-				<td class="padding10">Description</td>
-				<td></td>
-				<td></td>
-			</tr>
-			{% for b in backups %}
-				{% include 'include/admin_backup.html' %}
-			{% endfor %}
-		</table>
-		<br /><span class="add-button" title="Add a new backup job" id="add-backup-button">+ Add a new backup job</span>
-		<br /><br />
-		<div id="ajax-backup"></div>
-		<div class="add-note addName alert-info" style="width: inherit; margin-right: 15px;">
-			You can read the description of all parameters <a href="https://haproxy-wi.org/description.py?description=backup" title="Backup description" target="_blank">here</a>
-		</div>
-	</div>
-	
 </div>
 <div id="user-add-table" style="display: none;">	
 	<table class="overview">
@@ -541,7 +519,7 @@
 		</tr>
 	</table>
 </div>
-<div id="server-add-table" title="Add a new server " style="display: none;">	
+<div id="server-add-table" title="View certificate " style="display: none;">	
 	<table class="overview">
 		{% include 'include/admin_add_server.html' %}
 		<tr>
@@ -575,33 +553,6 @@
 		
 	</table>
 </div>	
-<div id="backup-add-table" title="Add a new backup job " style="display: none;">	
-	<table class="overview">
-		{% include 'include/add_backup.html' %}
-		<tr>
-			<td class="padding20">
-				Credentials for remote server
-				<span class="need-field">*</span>
-			</td>
-			<td>
-				<select id="backup-credentials" required>
-					<option disabled selected>Choose credentials</option>
-					{% for ssh in sshs %}
-						<option value="{{ssh.0}}">{{ssh.1}}</option>
-					{% endfor %}
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td class="padding20">
-				Description
-			</td>
-			<td>
-				{{ input('backup-description', size='30') }}
-			</td>
-		</tr>
-	</table>
-</div>
 {% include 'include/change_pass_form.html' %}
 <style>
 .ui-selectmenu-button.ui-button {
@@ -611,46 +562,4 @@
     width: 10%;
 }
 </style>
-<script>
-				$( function() {
-				{% for user in users %}
-					$("#role-{{user.0}}" ).selectmenu({
-						  width: 100
-						});
-					$("#usergroup-{{user.0}}" ).selectmenu({
-						  width: 100
-						});
-					
-				{% endfor %}
-				{% for server in servers %}
-					$("#servergroup-{{ server.0}}" ).selectmenu({
-						  width: 100
-						});
-					$("#slavefor-{{server.0}}" ).selectmenu({
-						  width: 130
-						});
-					$("#credentials-{{server.0}}" ).selectmenu({
-						  width: 150
-						});
-				{% endfor %}
-				{% for ssh in sshs %}
-					if (window.matchMedia('(max-width: 1280px)').matches) {
-						$("#sshgroup-{{ ssh.0}}" ).selectmenu({
-							width: 100
-						});
-					}
-				{% endfor %}
-				{% for server in backups %}
-					$("#backup-time-{{ server.0}}" ).selectmenu({
-						  width: 100
-						});
-					$("#backup-type-{{server.0}}" ).selectmenu({
-						  width: 130
-						});
-					$("#backup-credentials-{{server.0}}" ).selectmenu({
-						  width: 150
-						});
-				{% endfor %}
-				});
-			</script>
 {% endblock %}

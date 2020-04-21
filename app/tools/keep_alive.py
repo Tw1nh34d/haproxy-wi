@@ -23,20 +23,19 @@ def main():
 	port = sql.get_setting('haproxy_sock_port')
 	readstats = ""
 	killer = GracefulKiller()
-
+	
 	while True:
 		servers = sql.select_keep_alive()
 		for serv in servers:
 			try:			
 				readstats = subprocess.check_output(["echo show stat | nc "+serv[0]+" "+port], shell=True)
 			except CalledProcessError as e:
-				alert = "Try to start HAProxy serivce on " + serv[0]
+				alert = "Try start HAProxy serivce at " + serv[0]
 				funct.logging("localhost", " "+alert, keep_alive=1)
 				
 				start_command = []
-				start_command.append('sudo systemctl restart haproxy')
+				start_command.append('sudo '+sql.get_setting('restart_command'))
 				funct.ssh_command(serv[0], start_command)
-
 				time.sleep(30)
 				continue
 			except OSError as e:
@@ -44,17 +43,17 @@ def main():
 				sys.exit()
 			else:
 				cur_stat_service = "Ok"
-		time.sleep(30)
+		time.sleep(40)			
 		
 if __name__ == "__main__":
-	funct.logging("localhost", " Keep alive service is started", keep_alive=1)
+	funct.logging("localhost", " Keep alive service started", keep_alive=1)
 	killer = GracefulKiller()
 	
 	while True:
 		main()
 		time.sleep(60)
-
+		
 		if killer.kill_now:
 			break
 			
-	funct.logging("localhost", " Keep alive service is shutdown", keep_alive=1)
+	funct.logging("localhost", " Keep alive service shutdown", keep_alive=1)

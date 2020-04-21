@@ -46,7 +46,9 @@ def get_server(id):
 				'virt':s[4],
 				'enable':s[5],
 				'master':s[6],
-				'creds':s[7]
+				'creds':s[7],
+				'alert':s[8],
+				'metrics':s[9]
 			}
 	except:
 		server = data

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import cgi
 import os
 import sys
 import funct
@@ -10,7 +11,7 @@ import create_db
 import datetime
 import uuid
 from jinja2 import Environment, FileSystemLoader
-env = Environment(loader=FileSystemLoader('templates/'), autoescape=True)
+env = Environment(loader=FileSystemLoader('templates/'))
 template = env.get_template('login.html')
 form = funct.form
 
@@ -39,7 +40,7 @@ def send_cookie(login):
 	sql.write_user_uuid(login, user_uuid)
 	sql.write_user_token(login, user_token)
 	try:
-		funct.logging('locahost', ' '+sql.get_user_name_by_uuid(user_uuid)+' log in', haproxywi=1)
+		funct.logging('locahost', sql.get_user_name_by_uuid(user_uuid)+' log in', haproxywi=1, login=1)
 	except:
 		pass
 	print("Content-type: text/html\n")			
@@ -75,7 +76,7 @@ def check_in_ldap(user, password):
 	ldap_search_field = sql.get_setting('ldap_search_field')
 	ldap_user_attribute = sql.get_setting('ldap_user_attribute')
 	
-	l = ldap.initialize('ldap://{}:{}/'.format(server, port))
+	l = ldap.initialize(server+':'+port)
 	try:
 		l.protocol_version = ldap.VERSION3
 		l.set_option(ldap.OPT_REFERRALS, 0)
@@ -146,7 +147,7 @@ if login is not None and password is not None:
 	for users in USERS:	
 		if users[7] == 0:
 			print("Content-type: text/html\n")	
-			print('Your login is disabled')
+			print('<center><div class="alert alert-danger">Your login is disabled</div><br /><br />')
 			sys.exit()
 		if users[6] == 1:
 			if login in users[1]:
